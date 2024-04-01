@@ -1,0 +1,9 @@
+*.egg-info/
+__pycache__/
+dist/
+config.json
+lightspeed.ahk
+build/
+lightspeed.spec
+*.zip
+main.spec
