@@ -34,7 +34,7 @@ def resumegame():
 
 # 加载字体
 with dpg.font_registry():
-    with dpg.font("ark-pixel-12px-monospaced-zh_cn.ttf", 18) as font1:  # 增加中文编码范围，数字是字号,会比官方字体模糊
+    with dpg.font("afont.ttf", 18) as font1:  # 增加中文编码范围，数字是字号,会比官方字体模糊
         # dpg.add_font_range_hint(dpg.mvFontRangeHint_Default)
         dpg.add_font_range_hint(dpg.mvFontRangeHint_Chinese_Simplified_Common)
         # dpg.add_font_range_hint(dpg.mvFontRangeHint_Chinese_Full)
