@@ -32,6 +32,9 @@ def resumegame():
     game_name = dpg.get_value('game_name_exe')
     runinsubprocess('PsSuspend -r ' + game_name)
 
+def opentaskmgr():
+    runinsubprocess('taskmgr')
+
 # 加载字体
 with dpg.font_registry():
     with dpg.font("afont.ttf", 18) as font1:  # 增加中文编码范围，数字是字号,会比官方字体模糊
@@ -41,18 +44,25 @@ with dpg.font_registry():
     dpg.bind_font(font1)
 
 # 窗体主函数
-with dpg.window(label='pauser', width=400, height=400,pos=(10, 10)):
+with dpg.window(label='pauser',  width=400, height=400,pos=(10, 10)):
     # dpg.add_input_text(default_value='PsSuspend DevilMayCry5.exe' , tag='pause_DevilMayCry5_cmd')
     # dpg.add_input_text(default_value='PsSuspend -r DevilMayCry5.exe ' , tag='remuse_DevilMayCry5_cmd')
+
     dpg.add_combo(default_value='' , items=['XXX.exe'], tag='game_name_exe')
     dpg.add_text(default_value='Game Status untouched' , color=(120,120,120) ,tag='indicator')
-    dpg.add_button(label='Pause', callback=pausegame)
-    dpg.add_button(label='Resume', callback=resumegame)
-    dpg.add_text('---')
-    dpg.add_button(label='reload config', callback=loadconfig)
+    dpg.add_spacing(count=3)
+
+    dpg.add_button(label='Pause', callback=pausegame);dpg.add_same_line()
+    dpg.add_button(label='Resume', callback=resumegame);dpg.add_same_line()
+    dpg.add_button(label='Taskmgr', callback=opentaskmgr)
+    dpg.add_spacing(count=3)
+    dpg.add_separator()
+    dpg.add_spacing(count=3)
+
+    dpg.add_button(label='reload config', callback=loadconfig);dpg.add_same_line()
     dpg.add_button(label='edit config', callback=editconfig)
     dpg.add_text(tag='infotext', default_value='Game loaded:', color=(120,120,120))
-
+    # dpg.show_documentation()
 # onload 事件
 loadconfig()
 
