@@ -22,3 +22,5 @@ python main.py
 
 ![snapshot.png](snapshot.png)
 
+## samiliar tool 
+https://github.com/Merrit/nyrna/
