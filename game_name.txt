@@ -1,1 +1,4 @@
 DevilMayCry5.exe
+open Config - Edit
+chrome.exe
+msedge.exe
