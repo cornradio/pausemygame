@@ -25,7 +25,7 @@ def editconfig():
     runinsubprocess('notepad game_name.txt')
 
 def pausegame():
-    dpg.configure_item('indicator', default_value='Game Paused' , color=(0,0,255))
+    dpg.configure_item('indicator', default_value='Game Paused' , color=(255,0,255))
     game_name = dpg.get_value('game_name_exe')
     hide_by_exe(game_name)
     runinsubprocess('PsSuspend ' + game_name)
@@ -67,7 +67,7 @@ with dpg.window(label='pauser',tag="pauser",  width=400, height=400,pos=(10, 10)
     # dpg.add_input_text(default_value='PsSuspend DevilMayCry5.exe' , tag='pause_DevilMayCry5_cmd')
     # dpg.add_input_text(default_value='PsSuspend -r DevilMayCry5.exe ' , tag='remuse_DevilMayCry5_cmd')
 
-
+    # pauser
     dpg.add_text(default_value='Game Pauser'  , color=(120,220,220)  )
     dpg.add_combo(default_value='' , items=['XXX.exe'], tag='game_name_exe')
     dpg.add_text(default_value='Game Status untouched' , color=(120,120,120) ,tag='indicator')
@@ -75,29 +75,30 @@ with dpg.window(label='pauser',tag="pauser",  width=400, height=400,pos=(10, 10)
     dpg.add_button(label='Resume', callback=resumegame);dpg.add_same_line()
     dpg.add_button(label="kill",callback=killgame)
     dpg.add_spacing(count=3)
-
     dpg.add_separator()
 
-
+    # config
     dpg.add_text(default_value='Config'  , color=(120,220,120) )
     with dpg.group(horizontal=True):
         dpg.add_button(label='Reload', callback=loadconfig)
         dpg.add_button(label='Edit', callback=editconfig)
         dpg.add_text(tag='infotext', default_value='Game loaded:', color=(120,120,120))
-    dpg.add_separator()
 
+    # tools
     dpg.add_text(default_value='Tools'  , color=(120,220,120) )
     with dpg.group(horizontal=True):
         dpg.add_button(label='Taskmgr', callback=opentaskmgr)
         dpg.add_button(label='Ntop', callback=openntop)
+        with dpg.popup(dpg.last_item()):
+            dpg.add_text("Ntop is a monitor tool:")
+            dpg.add_button(label="Download Ntop",callback=lambda:webbrowser.open("https://github.com/gsass1/NTop/releases/"))
 
-    dpg.add_separator()
-    dpg.add_spacing(count=3)
-    with dpg.menu(label="Help"):
-        dpg.add_menu_item(label="Github",callback=lambda:webbrowser.open("https://github.com/cornradio/pausemygame"))
-        dpg.add_menu_item(label="Download Ntop",callback=lambda:webbrowser.open("https://github.com/gsass1/NTop/releases/"))
-        dpg.add_menu_item(label="info", callback=lambda: dpg.configure_item("help_pop_up", show=True))
-    dpg.add_separator()
+
+
+    dpg.add_text(default_value='Help'  , color=(120,220,120) )
+    with dpg.group(horizontal=True):
+        dpg.add_button(label="Github",callback=lambda:webbrowser.open("https://github.com/cornradio/pausemygame"))
+        dpg.add_button(label="info", callback=lambda: dpg.configure_item("help_pop_up", show=True))
 
 # 提示窗口
 with dpg.window(label="help_pop_up", modal=True, show=False, tag="help_pop_up", no_title_bar=True):
