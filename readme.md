@@ -20,7 +20,8 @@ python main.py
 
 ## snapshots
 
-![snapshot.png](snapshot.png)
+![image](https://github.com/user-attachments/assets/9c45f704-9686-43ed-b68d-6193db2cbe94)
+
 
 ## samiliar tool 
 https://github.com/Merrit/nyrna/
