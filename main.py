@@ -28,25 +28,23 @@ def pausegame():
     dpg.configure_item('indicator', default_value='Game Paused' , color=(255,0,255))
     game_name = dpg.get_value('game_name_exe')
     hide_by_exe(game_name)
-    runinsubprocess('PsSuspend ' + game_name)
+    runinsubprocess(f'PsSuspend "{game_name}"')
 
 def killgame():
     dpg.configure_item('indicator', default_value='Game Killed' , color=(255,0,0))
     game_name = dpg.get_value('game_name_exe')
-    runinsubprocess("taskkill /IM "+ game_name + " /F")
+    runinsubprocess(f'taskkill /IM "{game_name}" /F')
 
 def resumegame():
     dpg.configure_item('indicator', default_value='Game Resumed' , color=(0,255,0))
     game_name = dpg.get_value('game_name_exe')
-    runinsubprocess('PsSuspend -r ' + game_name)
+    runinsubprocess(f'PsSuspend -r "{game_name}"')
 
 def opentaskmgr():
     runinsubprocess('taskmgr')
 
 def openntop():
     runinsubprocess('ntop')
-
-
 
 # 加载字体
 with dpg.font_registry():
@@ -56,13 +54,8 @@ with dpg.font_registry():
         # dpg.add_font_range_hint(dpg.mvFontRangeHint_Chinese_Full)
     dpg.bind_font(font1)
 
-
-
-
-
 # 窗体主函数 
 with dpg.window(label='pauser',tag="pauser",  width=400, height=400,pos=(10, 10)):
-
 
     # dpg.add_input_text(default_value='PsSuspend DevilMayCry5.exe' , tag='pause_DevilMayCry5_cmd')
     # dpg.add_input_text(default_value='PsSuspend -r DevilMayCry5.exe ' , tag='remuse_DevilMayCry5_cmd')
@@ -71,9 +64,11 @@ with dpg.window(label='pauser',tag="pauser",  width=400, height=400,pos=(10, 10)
     dpg.add_text(default_value='Game Pauser'  , color=(120,220,220)  )
     dpg.add_combo(default_value='' , items=['XXX.exe'], tag='game_name_exe')
     dpg.add_text(default_value='Game Status untouched' , color=(120,120,120) ,tag='indicator')
-    dpg.add_button(label='Pause', callback=pausegame);dpg.add_same_line()
-    dpg.add_button(label='Resume', callback=resumegame);dpg.add_same_line()
-    dpg.add_button(label="kill",callback=killgame)
+    with dpg.group(horizontal=True):
+        dpg.add_button(label='Pause', callback=pausegame)
+        dpg.add_button(label='Resume', callback=resumegame)
+        dpg.add_button(label="kill", callback=killgame)
+
     dpg.add_spacing(count=3)
     dpg.add_separator()
 
@@ -92,8 +87,6 @@ with dpg.window(label='pauser',tag="pauser",  width=400, height=400,pos=(10, 10)
         with dpg.popup(dpg.last_item()):
             dpg.add_text("Ntop is a monitor tool:")
             dpg.add_button(label="Download Ntop",callback=lambda:webbrowser.open("https://github.com/gsass1/NTop/releases/"))
-
-
 
     dpg.add_text(default_value='Help'  , color=(120,220,120) )
     with dpg.group(horizontal=True):
