@@ -87,7 +87,8 @@ with dpg.window(label='pauser',tag="pauser",  width=400, height=400,pos=(10, 10)
         with dpg.popup(dpg.last_item()):
             dpg.add_text("Ntop is a monitor tool:")
             dpg.add_button(label="Download Ntop",callback=lambda:webbrowser.open("https://github.com/gsass1/NTop/releases/"))
-
+        dpg.add_text(tag='infotext2', default_value='Ntop help : shift + M , Memory list', color=(120,120,120))
+        
     dpg.add_text(default_value='Help'  , color=(120,220,120) )
     with dpg.group(horizontal=True):
         dpg.add_button(label="Github",callback=lambda:webbrowser.open("https://github.com/cornradio/pausemygame"))

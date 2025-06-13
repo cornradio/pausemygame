@@ -1,2 +1,3 @@
 DevilMayCry5.exe
 chrome.exe
+SB-Win64-Shipping.exe
