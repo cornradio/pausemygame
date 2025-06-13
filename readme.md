@@ -4,23 +4,16 @@ this is a simple app for windows to pause and resume a process by its name.
 this tool can pause and resume a game process very easily.
 
 ## how to use
-1. install dependiences
-```
-pip install dearpygui
-```
-2. run main.py
-```
-python main.py
-```
+download release from github and run unzip. then run main2.exe
 
-## how to know exename?
+## how to find exe name?
 
 1. open taskmanager
 2. right any process and see properties
 
 ## snapshots
 
-![image](https://github.com/user-attachments/assets/9c45f704-9686-43ed-b68d-6193db2cbe94)
+![image](https://github.com/user-attachments/assets/f7f64024-f576-43ba-89f0-7aef7d5574e7)
 
 
 ## samiliar tool 
