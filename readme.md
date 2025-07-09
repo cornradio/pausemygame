@@ -3,8 +3,13 @@ this is a simple app for windows to pause and resume a process by its name.
 
 this tool can pause and resume a game process very easily.
 
-## how to use
-download release from github and run unzip. then run main2.exe
+## install
+download release from github 
+
+or use winget 
+```
+winget install cornradio.pausemygame
+```
 
 ## how to find exe name?
 
