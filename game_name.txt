@@ -1,3 +1,11 @@
 DevilMayCry5.exe
 chrome.exe
 SB-Win64-Shipping.exe
+DevilMayCry5.exe
+chrome.exe
+SB-Win64-Shipping.exe
+RDR2.exe
+HogwartsLegacy.exe
+Control_DX12.exe
+DeadIsland-Win64-Shipping.exe
+DWORIGINS.exe

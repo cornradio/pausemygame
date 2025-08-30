@@ -1,0 +1,3 @@
+Pillow>=9.0.0
+psutil>=5.8.0
+pywin32>=300
