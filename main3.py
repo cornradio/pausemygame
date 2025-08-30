@@ -16,7 +16,7 @@ class GamePauser:
     def __init__(self, root):
         self.root = root
         self.root.title("pause my game")
-        self.root.geometry("440x380")
+        self.root.geometry("440x320")
         
         # 设置图标
         try:
@@ -71,7 +71,7 @@ class GamePauser:
         self.main_frame.pack(fill=tk.BOTH, expand=True)
         
         # 标题
-        ttk.Label(self.main_frame, text="Game Pauser", foreground="#78DCDC", font=('Arial', 18, 'bold')).pack(pady=10)
+        # ttk.Label(self.main_frame, text="Game Pauser", foreground="#78DCDC", font=('Arial', 18, 'bold')).pack(pady=10)
         
         # 创建左右分栏框架
         content_frame = ttk.Frame(self.main_frame)
@@ -84,7 +84,7 @@ class GamePauser:
         left_frame.pack_propagate(False)  # 防止子组件改变父组件大小
         
         # 程序列表标题
-        ttk.Label(left_frame, text="games", foreground="#ffffff", font=('Arial', 12, 'bold')).pack(pady=(0, 5))
+        # ttk.Label(left_frame, text="games", foreground="#ffffff", font=('Arial', 12, 'bold')).pack(pady=(0, 5))
         
         # 创建Listbox
         self.program_listbox = tk.Listbox(left_frame, 
