@@ -23,8 +23,11 @@ main3.py 更改了ui设计，增加了读取icon的功能。
 2. right any process and see properties
 
 ## snapshots
-
+main2.py
 ![image](https://github.com/user-attachments/assets/f7f64024-f576-43ba-89f0-7aef7d5574e7)
+
+main3.py
+<img width="1046" height="737" alt="image" src="https://github.com/user-attachments/assets/5847fde1-aab6-4e33-8823-bcf90149e363" />
 
 
 ## samiliar tool 
