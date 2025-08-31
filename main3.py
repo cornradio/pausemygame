@@ -19,7 +19,7 @@ class GamePauser:
     def __init__(self, root):
         self.root = root
         self.root.title("pause my game")
-        self.root.geometry("460x360")  # 增加窗口高度以容纳新按钮
+        self.root.geometry("460x350")  # 增加窗口高度以容纳新按钮
         
         # 数据库文件路径
         self.db_file = 'game_database.json'
