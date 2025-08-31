@@ -14,6 +14,8 @@ import PIL.ImageTk as ImageTk
 import json
 import base64
 import io
+import threading
+import time
 
 class GamePauser:
     def __init__(self, root):
@@ -25,6 +27,15 @@ class GamePauser:
         self.db_file = 'game_database.json'
         self.game_db = {}
         self.load_database()
+        
+        # 快捷键设置
+        self.hotkey_file = 'hotkeys.json'
+        self.hotkeys = {'pause': 'Ctrl+Alt+P', 'resume': 'Ctrl+Alt+R'}
+        self.load_hotkeys()
+        
+        # 启动快捷键监听线程
+        self.hotkey_thread = threading.Thread(target=self.hotkey_listener, daemon=True)
+        self.hotkey_thread.start()
         
         # 设置图标
         try:
@@ -101,7 +112,12 @@ class GamePauser:
                                          selectbackground='#4b6eaf',
                                          selectforeground='#ffffff',
                                          font=('Arial', 11),
-                                         height=12)
+                                         height=12,
+                                         relief='flat',
+                                         bd=0,
+                                         highlightthickness=1,
+                                         highlightcolor='#4b6eaf',
+                                         highlightbackground='#3c3f41')
         self.program_listbox.pack(fill=tk.BOTH, expand=True)
         
         # 绑定Listbox选择事件
@@ -245,6 +261,14 @@ class GamePauser:
         file_menu.add_command(label="Show Path", command=self.show_path)
         file_menu.add_separator()
         file_menu.add_command(label="Exit", command=self.root.quit)
+        
+        # 快捷键菜单
+        hotkey_menu = tk.Menu(menubar, tearoff=0)
+        menubar.add_cascade(label="Hotkey", menu=hotkey_menu)
+        hotkey_menu.add_command(label=f"Set Pause Hotkey ({self.hotkeys.get('pause', 'Not set')})", command=self.set_pause_hotkey)
+        hotkey_menu.add_command(label=f"Set Resume Hotkey ({self.hotkeys.get('resume', 'Not set')})", command=self.set_resume_hotkey)
+        hotkey_menu.add_separator()
+        hotkey_menu.add_command(label="Show Current Hotkeys", command=self.show_hotkeys)
         
         # 工具菜单
         tools_menu = tk.Menu(menubar, tearoff=0)
@@ -543,6 +567,252 @@ class GamePauser:
                 self.run_in_subprocess(f'notepad "{self.db_file}"')
         except Exception as e:
             print(f"打开数据库文件失败: {e}")
+
+    def load_hotkeys(self):
+        """加载快捷键设置"""
+        try:
+            if os.path.exists(self.hotkey_file):
+                with open(self.hotkey_file, 'r', encoding='utf-8') as f:
+                    self.hotkeys = json.load(f)
+        except Exception as e:
+            print(f"加载快捷键失败: {e}")
+
+    def save_hotkeys(self):
+        """保存快捷键设置"""
+        try:
+            with open(self.hotkey_file, 'w', encoding='utf-8') as f:
+                json.dump(self.hotkeys, f, ensure_ascii=False, indent=2)
+        except Exception as e:
+            print(f"保存快捷键失败: {e}")
+
+    def set_pause_hotkey(self):
+        """设置暂停快捷键"""
+        self.show_hotkey_dialog("pause", "Set Pause Hotkey")
+
+    def set_resume_hotkey(self):
+        """设置恢复快捷键"""
+        self.show_hotkey_dialog("resume", "Set Resume Hotkey")
+
+    def show_hotkey_dialog(self, action, title):
+        """显示快捷键设置对话框"""
+        dialog = tk.Toplevel(self.root)
+        dialog.title(title)
+        dialog.geometry("400x300")
+        dialog.configure(bg='#2b2b2b')
+        dialog.transient(self.root)
+        dialog.grab_set()
+        
+        # 居中显示
+        dialog.geometry("+%d+%d" % (self.root.winfo_rootx() + 50, self.root.winfo_rooty() + 50))
+        
+        main_frame = ttk.Frame(dialog, padding="20")
+        main_frame.pack(fill=tk.BOTH, expand=True)
+        
+        # 说明文字
+        ttk.Label(main_frame, text="Press the key combination you want to use:", 
+                 foreground='#ffffff', font=('Arial', 12)).pack(pady=10)
+        
+        # 当前快捷键显示
+        current_hotkey = self.hotkeys.get(action, 'Not set')
+        current_label = ttk.Label(main_frame, text=f"Current: {current_hotkey}", 
+                                 foreground='#78DCDC', font=('Arial', 10, 'bold'))
+        current_label.pack(pady=5)
+        
+        # 新快捷键显示
+        new_label = ttk.Label(main_frame, text="New: Press keys...", 
+                             foreground='#FFD93D', font=('Arial', 10, 'bold'))
+        new_label.pack(pady=5)
+        
+        # 按钮框架
+        btn_frame = ttk.Frame(main_frame)
+        btn_frame.pack(pady=20)
+        
+        ttk.Button(btn_frame, text="Cancel", command=dialog.destroy).pack(side=tk.LEFT, padx=5)
+        ttk.Button(btn_frame, text="Clear", command=lambda: self.clear_hotkey(action, dialog)).pack(side=tk.LEFT, padx=5)
+        
+        # 绑定键盘事件
+        def on_key(event):
+            keys = []
+            if event.state & 0x4:  # Ctrl
+                keys.append('Ctrl')
+            if event.state & 0x8:  # Alt
+                keys.append('Alt')
+            if event.state & 0x1:  # Shift
+                keys.append('Shift')
+            
+            # 获取按键名称
+            key_name = event.keysym
+            if key_name not in ['Control_L', 'Control_R', 'Alt_L', 'Alt_R', 'Shift_L', 'Shift_R']:
+                keys.append(key_name)
+            
+            if keys:
+                new_hotkey = '+'.join(keys)
+                new_label.config(text=f"New: {new_hotkey}")
+                
+                # 保存快捷键
+                self.hotkeys[action] = new_hotkey
+                self.save_hotkeys()
+                
+                # 更新当前显示
+                current_label.config(text=f"Current: {new_hotkey}")
+                
+                # 更新快捷键注册
+                self.update_hotkey_registration()
+                
+                # 更新菜单显示
+                self.update_hotkey_menu()
+        
+        dialog.bind('<Key>', on_key)
+        dialog.focus_set()
+
+    def clear_hotkey(self, action, dialog):
+        """清除快捷键"""
+        self.hotkeys[action] = 'Not set'
+        self.save_hotkeys()
+        # 更新快捷键注册
+        self.update_hotkey_registration()
+        # 更新菜单显示
+        self.update_hotkey_menu()
+        dialog.destroy()
+
+    def show_hotkeys(self):
+        """显示当前快捷键设置"""
+        hotkey_window = tk.Toplevel(self.root)
+        hotkey_window.title("Current Hotkeys")
+        hotkey_window.geometry("300x250")
+        hotkey_window.configure(bg='#2b2b2b')
+        
+        main_frame = ttk.Frame(hotkey_window, padding="20")
+        main_frame.pack(fill=tk.BOTH, expand=True)
+        
+        ttk.Label(main_frame, text="Current Hotkey Settings", 
+                 foreground='#78DCDC', font=('Arial', 14, 'bold')).pack(pady=10)
+        
+        ttk.Label(main_frame, text=f"Pause: {self.hotkeys.get('pause', 'Not set')}", 
+                 foreground='#FF8E53', font=('Arial', 12)).pack(pady=5)
+        
+        ttk.Label(main_frame, text=f"Resume: {self.hotkeys.get('resume', 'Not set')}", 
+                 foreground='#4ECDC4', font=('Arial', 12)).pack(pady=5)
+        
+        ttk.Button(main_frame, text="OK", command=hotkey_window.destroy).pack(pady=20)
+
+    def hotkey_listener(self):
+        """全局快捷键监听线程"""
+        try:
+            import keyboard
+            
+            def on_pause_hotkey():
+                """暂停快捷键回调"""
+                try:
+                    # 在主线程中执行UI更新
+                    self.root.after(0, self.execute_pause_hotkey)
+                except Exception as e:
+                    print(f"执行暂停快捷键失败: {e}")
+            
+            def on_resume_hotkey():
+                """恢复快捷键回调"""
+                try:
+                    # 在主线程中执行UI更新
+                    self.root.after(0, self.execute_resume_hotkey)
+                except Exception as e:
+                    print(f"执行恢复快捷键失败: {e}")
+            
+            # 注册快捷键
+            pause_hotkey = self.hotkeys.get('pause', 'Ctrl+Alt+P')
+            resume_hotkey = self.hotkeys.get('resume', 'Ctrl+Alt+R')
+            
+            if pause_hotkey != 'Not set':
+                keyboard.add_hotkey(pause_hotkey, on_pause_hotkey)
+                print(f"注册暂停快捷键: {pause_hotkey}")
+            
+            if resume_hotkey != 'Not set':
+                keyboard.add_hotkey(resume_hotkey, on_resume_hotkey)
+                print(f"注册恢复快捷键: {resume_hotkey}")
+            
+            # 保持线程运行
+            keyboard.wait()
+            
+        except ImportError:
+            print("需要安装keyboard库: pip install keyboard")
+        except Exception as e:
+            print(f"快捷键监听失败: {e}")
+
+    def execute_pause_hotkey(self):
+        """执行暂停快捷键"""
+        game_name = self.get_selected_game()
+        if game_name:
+            self.status_label.config(text=f"⏸ {game_name} Paused (Hotkey)", foreground="#FF00FF")
+            hide_by_exe(game_name)
+            self.run_in_subprocess(f'PsSuspend "{game_name}"')
+        else:
+            self.status_label.config(text="请先选择一个程序 (Hotkey)", foreground="#FF0000")
+
+    def execute_resume_hotkey(self):
+        """执行恢复快捷键"""
+        game_name = self.get_selected_game()
+        if game_name:
+            self.status_label.config(text=f"▶ {game_name} Resumed (Hotkey)", foreground="#00FF00")
+            self.run_in_subprocess(f'PsSuspend -r "{game_name}"')
+        else:
+            self.status_label.config(text="请先选择一个程序 (Hotkey)", foreground="#FF0000")
+
+    def update_hotkey_registration(self):
+        """更新快捷键注册"""
+        try:
+            import keyboard
+            
+            # 清除所有现有快捷键
+            keyboard.unhook_all()
+            
+            # 重新注册快捷键
+            pause_hotkey = self.hotkeys.get('pause', 'Ctrl+Alt+P')
+            resume_hotkey = self.hotkeys.get('resume', 'Ctrl+Alt+R')
+            
+            def on_pause_hotkey():
+                self.root.after(0, self.execute_pause_hotkey)
+            
+            def on_resume_hotkey():
+                self.root.after(0, self.execute_resume_hotkey)
+            
+            if pause_hotkey != 'Not set':
+                keyboard.add_hotkey(pause_hotkey, on_pause_hotkey)
+                print(f"重新注册暂停快捷键: {pause_hotkey}")
+            
+            if resume_hotkey != 'Not set':
+                keyboard.add_hotkey(resume_hotkey, on_resume_hotkey)
+                print(f"重新注册恢复快捷键: {resume_hotkey}")
+                
+        except ImportError:
+            print("需要安装keyboard库: pip install keyboard")
+        except Exception as e:
+            print(f"更新快捷键注册失败: {e}")
+
+    def update_hotkey_menu(self):
+        """更新快捷键菜单显示"""
+        try:
+            # 获取菜单栏
+            menubar = self.root.config('menu')
+            if menubar:
+                # 找到Hotkey菜单
+                for i in range(menubar.index('end') + 1):
+                    try:
+                        menu_label = menubar.entrycget(i, 'label')
+                        if menu_label == 'Hotkey':
+                            # 删除旧的Hotkey菜单
+                            menubar.delete(i)
+                            break
+                    except:
+                        continue
+                
+                # 重新创建Hotkey菜单
+                hotkey_menu = tk.Menu(menubar, tearoff=0)
+                menubar.insert_cascade(i, label="Hotkey", menu=hotkey_menu)
+                hotkey_menu.add_command(label=f"Set Pause Hotkey ({self.hotkeys.get('pause', 'Not set')})", command=self.set_pause_hotkey)
+                hotkey_menu.add_command(label=f"Set Resume Hotkey ({self.hotkeys.get('resume', 'Not set')})", command=self.set_resume_hotkey)
+                hotkey_menu.add_separator()
+                hotkey_menu.add_command(label="Show Current Hotkeys", command=self.show_hotkeys)
+        except Exception as e:
+            print(f"更新快捷键菜单失败: {e}")
 
     def show_path(self):
         """用资源管理器打开存储文件路径"""
