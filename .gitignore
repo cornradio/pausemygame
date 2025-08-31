@@ -7,3 +7,4 @@ build/
 lightspeed.spec
 *.zip
 main.spec
+game_database.json
