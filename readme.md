@@ -8,7 +8,7 @@ The English version readme is at the bottom
 ## 安装
 从 GitHub [下载](https://github.com/cornradio/pausemygame/releases) 发布版本
 
-或者使用 winget 安装：(版本比较旧）
+或者使用 winget 安装：(版本比较旧，是v2）因为winget更新好麻烦还要审核以后也懒得更新了。
 ```
 winget install cornradio.pausemygame
 ```
