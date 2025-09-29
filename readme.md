@@ -1,3 +1,8 @@
+注意，本项目已废弃，建议使用
+https://github.com/cornradio/pausemygameW
+原生windows wpf开发，更加小巧易用。
+
+
 The English version readme is at the bottom
 
 ## 这是什么
